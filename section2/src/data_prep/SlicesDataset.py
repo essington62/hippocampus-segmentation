@@ -21,33 +21,30 @@ class SlicesDataset(Dataset):
 
     def __getitem__(self, idx):
         """
-        This method is called by PyTorch DataLoader class to return a sample with id idx
+        Este método é chamado pelo PyTorch DataLoader para retornar uma amostra.
 
         Arguments: 
-            idx {int} -- id of sample
+            idx {int} -- id da amostra
 
         Returns:
-            Dictionary of 2 Torch Tensors of dimensions [1, W, H]
+            sample {dict} -- contém:
+                - "id": índice global da fatia
+                - "image": Tensor [1, W, H] da imagem MRI
+                - "seg": Tensor [1, W, H] da segmentação
         """
-        slc = self.slices[idx]
+        slc = self.slices[idx]   # (id_volume, id_slice)
         sample = dict()
         sample["id"] = idx
 
-        # You could implement caching strategy here if dataset is too large to fit
-        # in memory entirely
-        # Also this would be the place to call transforms if data augmentation is used
-        
-        # TASK: Create two new keys in the "sample" dictionary, named "image" and "seg"
-        # The values are 3D Torch Tensors with image and label data respectively. 
-        # First dimension is size 1, and last two hold the voxel data from the respective
-        # slices. Write code that stores the 2D slice data in the last 2 dimensions of the 3D Tensors. 
-        # Your tensor needs to be of shape [1, patch_size, patch_size]
-        # Don't forget that you need to put a Torch Tensor into your dictionary element's value
-        # Hint: your 3D data sits in self.data variable, the id of the 3D volume from data array
-        # and the slice number are in the slc variable. 
-        # Hint2: You can use None notation like so: arr[None, :] to add size-1 
-        # dimension to a Numpy array
-        # <YOUR CODE GOES HERE>
+        vol_id, slice_id = slc
+
+        # Pega a fatia correspondente (numpy array)
+        image_slice = self.data[vol_id]["image"][slice_id, :, :]
+        seg_slice   = self.data[vol_id]["seg"][slice_id, :, :]
+
+        # Adiciona dimensão [1, W, H] e converte para tensor float32/long
+        sample["image"] = torch.tensor(image_slice[None, :, :], dtype=torch.float32)
+        sample["seg"]   = torch.tensor(seg_slice[None, :, :], dtype=torch.long)
 
         return sample
 
