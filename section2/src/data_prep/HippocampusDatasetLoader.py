@@ -9,7 +9,7 @@ from os.path import isfile, join
 import numpy as np
 from medpy.io import load
 
-#from utils.utils import med_reshape
+from utils.utils import med_reshape
 
 def LoadHippocampusData(root_dir, y_shape, z_shape):
     '''
