@@ -3,18 +3,18 @@ Contains various functions for computing statistics over 3D volumes
 """
 import numpy as np
 
-def Dice3d(a, b):
+def Dice3d(a, b, eps=1e-6):
     """
-    This will compute the Dice Similarity coefficient for two 3-dimensional volumes
-    Volumes are expected to be of the same size. We are expecting binary masks -
-    0's are treated as background and anything else is counted as data
+    Compute Dice Similarity coefficient for two 3D volumes.
+    Volumes are expected to be the same size. 
+    We treat 0 as background, anything else as foreground.
 
     Arguments:
-        a {Numpy array} -- 3D array with first volume
-        b {Numpy array} -- 3D array with second volume
+        a {Numpy array} -- 3D array (prediction)
+        b {Numpy array} -- 3D array (ground truth)
 
     Returns:
-        float
+        float -- Dice coefficient in [0, 1]
     """
     if len(a.shape) != 3 or len(b.shape) != 3:
         raise Exception(f"Expecting 3 dimensional inputs, got {a.shape} and {b.shape}")
@@ -22,23 +22,26 @@ def Dice3d(a, b):
     if a.shape != b.shape:
         raise Exception(f"Expecting inputs of the same shape, got {a.shape} and {b.shape}")
 
-    # TASK: Write implementation of Dice3D. If you completed exercises in the lessons
-    # you should already have it.
-    # <YOUR CODE HERE>
-    pass
+    # Convert to binary (foreground vs background)
+    a_bin = (a > 0).astype(np.int32)
+    b_bin = (b > 0).astype(np.int32)
 
-def Jaccard3d(a, b):
+    intersection = np.sum(a_bin * b_bin)
+    return (2. * intersection) / (np.sum(a_bin) + np.sum(b_bin) + eps)
+
+
+def Jaccard3d(a, b, eps=1e-6):
     """
-    This will compute the Jaccard Similarity coefficient for two 3-dimensional volumes
-    Volumes are expected to be of the same size. We are expecting binary masks - 
-    0's are treated as background and anything else is counted as data
+    Compute Jaccard Similarity coefficient (a.k.a. IoU) for two 3D volumes.
+    Volumes are expected to be the same size. 
+    We treat 0 as background, anything else as foreground.
 
     Arguments:
-        a {Numpy array} -- 3D array with first volume
-        b {Numpy array} -- 3D array with second volume
+        a {Numpy array} -- 3D array (prediction)
+        b {Numpy array} -- 3D array (ground truth)
 
     Returns:
-        float
+        float -- Jaccard index in [0, 1]
     """
     if len(a.shape) != 3 or len(b.shape) != 3:
         raise Exception(f"Expecting 3 dimensional inputs, got {a.shape} and {b.shape}")
@@ -46,8 +49,9 @@ def Jaccard3d(a, b):
     if a.shape != b.shape:
         raise Exception(f"Expecting inputs of the same shape, got {a.shape} and {b.shape}")
 
-    # TASK: Write implementation of Jaccard similarity coefficient. Please do not use 
-    # the Dice3D function from above to do the computation ;)
-    # <YOUR CODE GOES HERE>
+    a_bin = (a > 0).astype(np.int32)
+    b_bin = (b > 0).astype(np.int32)
 
-    return #
+    intersection = np.sum(a_bin * b_bin)
+    union = np.sum(a_bin) + np.sum(b_bin) - intersection
+    return intersection / (union + eps)

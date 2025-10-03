@@ -272,7 +272,16 @@ class UNetExperiment:
             "mean_jaccard": np.mean(jc_list)}
 
         print("\nTesting complete.")
+        mean_dice = np.mean(dc_list)
+        mean_jaccard = np.mean(jc_list)
+
+        print("\nTesting complete.")
+        print(f"Mean Dice: {mean_dice:.4f}")
+        print(f"Mean Jaccard: {mean_jaccard:.4f}")
+
         return out_dict
+
+
 
     def run(self):
         """
