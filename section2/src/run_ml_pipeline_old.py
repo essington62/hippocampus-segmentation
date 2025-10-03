@@ -3,8 +3,7 @@ This file contains code that will kick off training and testing processes
 """
 import os
 import json
-from sklearn.model_selection import train_test_split
-import numpy as np
+
 from experiments.UNetExperiment import UNetExperiment
 from data_prep.HippocampusDatasetLoader import LoadHippocampusData
 
@@ -14,12 +13,12 @@ class Config:
     """
     def __init__(self):
         self.name = "Basic_unet"
-        self.root_dir = r"/Users/edmundobrown/Documents/Alzheimer/nd320-c3-3d-imaging-starter/section1/out"
+        self.root_dir = r"/Users/edmundobrown/Documents/AlzheimerV2/hippocampus-segmentation/data/TrainingSet"
         self.n_epochs = 10
         self.learning_rate = 0.0002
         self.batch_size = 8
         self.patch_size = 64
-        self.test_results_dir = "/Users/edmundobrown/Documents/Alzheimer/nd320-c3-3d-imaging-starter/section2/out"
+        self.test_results_dir = "/Users/edmundobrown/Documents/AlzheimerV2/hippocampus-segmentation/section2/out"
 
 if __name__ == "__main__":
     # Get configuration
@@ -39,31 +38,17 @@ if __name__ == "__main__":
     # In a real world scenario you would probably do multiple splits for 
     # multi-fold training to improve your model quality
 
-    # é um índice (0..N-1) para cada volume carregado.
     keys = range(len(data))
-    
-    # Shuffle keys (to randomize dataset order)
-    keys = np.random.permutation(keys)
-
-    # Train / Val / Test split
-    train_keys, test_keys = train_test_split(keys, test_size=0.2, random_state=42)  # 80/20 split
-    train_keys, val_keys = train_test_split(train_keys, test_size=0.1, random_state=42)  # 10% of train -> val
-
 
     # Here, random permutation of keys array would be useful in case if we do something like 
     # a k-fold training and combining the results. 
 
-    #split = dict()
+    split = dict()
 
     # TASK: create three keys in the dictionary: "train", "val" and "test". In each key, store
     # the array with indices of training volumes to be used for training, validation 
     # and testing respectively.
     # <YOUR CODE GOES HERE>
-    split = {
-        "train": train_keys,
-        "val": val_keys,
-        "test": test_keys
-    }
 
     # Set up and run experiment
     

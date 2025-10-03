@@ -60,30 +60,5 @@ class UNetInferenceAgent:
         # correct by running it on one of the volumes in your training set and comparing 
         # with the label in 3D Slicer.
         # <YOUR CODE HERE>
-         # Assuming volume is a numpy array of shape [X, Y, Z] and we need to slice along X axis
-        slices = []
 
-        with torch.no_grad():
-            for i in range(volume.shape[0]):  # percorre o eixo X
-                # Seleciona fatia [Y, Z]
-                slice_img = volume[i, :, :]
-
-                # Converte para tensor PyTorch [1, 1, Y, Z]
-                slice_tensor = torch.tensor(slice_img[None, None, :, :], dtype=torch.float32).to(self.device)
-
-                # Forward no modelo
-                pred = self.model(slice_tensor)
-
-                # Pega a classe mais provável
-                pred_class = torch.argmax(F.softmax(pred, dim=1), dim=1)
-
-                # Remove batch e canal → vira [Y, Z]
-                slices.append(pred_class.squeeze().cpu().numpy())
-
-        # Empilha todas as fatias → volume segmentado [X, Y, Z]
-        segmentation = np.stack(slices, axis=0)
-
-        return segmentation
-
-
-    
+        return # 

@@ -5,11 +5,10 @@ import os
 from os import listdir
 from os.path import isfile, join
 
-
 import numpy as np
 from medpy.io import load
 
-#from utils.utils import med_reshape
+from utils.utils import med_reshape
 
 def LoadHippocampusData(root_dir, y_shape, z_shape):
     '''
@@ -40,8 +39,7 @@ def LoadHippocampusData(root_dir, y_shape, z_shape):
         label, _ = load(os.path.join(label_dir, f))
 
         # TASK: normalize all images (but not labels) so that values are in [0..1] range
-        image = (image - np.min(image)) / (np.max(image) - np.min(image))
-
+        # <YOUR CODE GOES HERE>
 
         # We need to reshape data since CNN tensors that represent minibatches
         # in our case will be stacks of slices and stacks need to be of the same size.
@@ -53,12 +51,9 @@ def LoadHippocampusData(root_dir, y_shape, z_shape):
         # TASK: med_reshape function is not complete. Go and fix it!
         image = med_reshape(image, new_shape=(image.shape[0], y_shape, z_shape))
         label = med_reshape(label, new_shape=(label.shape[0], y_shape, z_shape)).astype(int)
-        
-        
+
         # TASK: Why do we need to cast label to int?
-        # ANSWER: Labels represent discrete classes (0 = background, 1 = anterior, 2 = posterior). 
-        # We cast them to int so that the model and loss functions treat them as categorical values, 
-        # not continuous intensity values.
+        # ANSWER: 
 
         out.append({"image": image, "seg": label, "filename": f})
 

@@ -99,6 +99,9 @@ class UNetExperiment:
             # 
             # data = <YOUR CODE HERE>
             # target = <YOUR CODE HERE>
+            data = batch["image"].to(self.device)   # shape: [B, 1, W, H]
+            target = batch["seg"].to(self.device)   # shape: [B, 1, W, H]
+
 
             prediction = self.model(data)
 
@@ -110,6 +113,10 @@ class UNetExperiment:
 
             # TASK: What does each dimension of variable prediction represent?
             # ANSWER:
+            # prediction: [batch_size, num_classes, height, width]
+                # - dim 0: índice da amostra no batch
+                # - dim 1: probabilidade para cada classe
+                # - dim 2 e 3: mapa espacial (H x W)
 
             loss.backward()
             self.optimizer.step()
@@ -152,13 +159,22 @@ class UNetExperiment:
         with torch.no_grad():
             for i, batch in enumerate(self.val_loader):
                 
-                # TASK: Write validation code that will compute loss on a validation sample
-                # <YOUR CODE HERE>
+                # Pegar dados do batch
+                data = batch["image"].to(self.device)   # [B, 1, H, W]
+                target = batch["seg"].to(self.device)   # [B, 1, H, W]
 
-                print(f"Batch {i}. Data shape {data.shape} Loss {loss}")
+                # Forward
+                prediction = self.model(data)           # [B, C, H, W]
+                prediction_softmax = F.softmax(prediction, dim=1)
 
-                # We report loss that is accumulated across all of validation set
+                # Loss (mesmo esquema do treino: tira canal do target)
+                loss = self.loss_function(prediction, target[:, 0, :, :])
+
+                print(f"Batch {i}. Data shape {data.shape} Loss {loss.item():.4f}")
+
+                # Guardar valor da perda
                 loss_list.append(loss.item())
+
 
         self.scheduler.step(np.mean(loss_list))
 
